@@ -68,6 +68,9 @@ window.addEventListener("hashchange", route);
 const soloImg = document.getElementById("solo-img");
 const soloEmpty = document.getElementById("solo-empty");
 const soloCount = document.getElementById("solo-count");
+// Running tally of saved worlds, remembered on this device.
+let worldsSaved = 0;
+try { worldsSaved = Number(localStorage.getItem("froggy-worlds-saved")) || 0; } catch {}
 let soloPool = null;   // photos that actually exist
 let soloBag = [];      // no repeats until every photo has been shown
 let soloCurrent = null;
@@ -96,7 +99,9 @@ async function showNextSolo() {
   soloImg.classList.remove("wiggle");
   void soloImg.offsetWidth;
   soloImg.classList.add("wiggle");
-  soloCount.textContent = `${soloPool.length - soloBag.length} of ${soloPool.length} missions seen`;
+  worldsSaved++;
+  try { localStorage.setItem("froggy-worlds-saved", worldsSaved); } catch {}
+  soloCount.textContent = `🌍 World saved ${worldsSaved.toLocaleString()} time${worldsSaved === 1 ? "" : "s"}`;
 }
 document.getElementById("shuffle").addEventListener("click", showNextSolo);
 

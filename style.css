@@ -298,3 +298,11 @@ body.open-party .party .room { display: flex; animation: pop .5s ease-out; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.saved-count {
+  font: 1.6rem "Bangers", Impact, sans-serif;
+  letter-spacing: 1px;
+  color: var(--pepe-dark);
+  margin: 0;
+  transform: rotate(-1deg);
+}
