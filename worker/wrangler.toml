@@ -1,0 +1,15 @@
+name = "momma-froggy"
+main = "index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Faster/cheaper: gpt-image-2.5-flare. More detailed: gpt-image-2.5-sunburst.
+MODEL = "gpt-image-2.5-flare"
+QUALITY = "medium"
+# Reference photos of Momma (comma-separated). Swap for real photos of her once they're on the site.
+MOMMA_REFS = "https://edguanuna.github.io/momma-birthday/images/solo/04.jpg,https://edguanuna.github.io/momma-birthday/images/solo/08.jpg"
+ALLOWED_ORIGINS = "https://edguanuna.github.io,http://localhost:8420"
+
+# Secrets (set with `npx wrangler secret put <NAME>`, never committed):
+#   OPENAI_API_KEY  - required
+#   PARTY_PASSWORD  - optional; if set, Froggy Party asks for it

@@ -61,16 +61,21 @@
           </span>
         </label>
 
+        <input id="party-pass" class="pass" type="password" placeholder="secret frog word 🐸" autocomplete="off" hidden>
+
         <button id="froggify" class="big-btn" disabled>✨ Make It Froggy ✨</button>
 
+        <p id="party-status" class="status" hidden></p>
+
         <div class="frame result" hidden>
-          <canvas id="party-canvas" width="1080" height="1080"></canvas>
+          <img id="party-img" alt="Your froggy mission with Momma" hidden>
+          <canvas id="party-canvas" width="1080" height="1080" hidden></canvas>
         </div>
         <div class="result-actions" hidden>
           <button id="reroll" class="small-btn">🎲 New mission</button>
           <a id="download" class="small-btn" download="froggy-party.png">⬇️ Save pic</a>
         </div>
-        <p class="tiny">Your photo stays on your device. Only upload people who are cool with it.</p>
+        <p class="tiny">Your photo is sent to the AI to make the picture and isn't saved by this site. Only upload people who are cool with it.</p>
       </div>
     </section>
   </main>

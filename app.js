@@ -101,8 +101,8 @@ async function showNextSolo() {
 document.getElementById("shuffle").addEventListener("click", showNextSolo);
 
 // ---------- FROGGY PARTY: upload + froggify ----------
-// For now this builds a meme collage right in the browser (works on GitHub Pages, no API key).
-// Later it can be swapped for a real AI image model behind a small serverless function.
+// The AI picture comes from the Cloudflare Worker in worker/ (it holds the OpenAI key).
+// If the Worker is unreachable, we fall back to a meme collage made right in the browser.
 const SCENES = [
   { title: "OPERATION: AREA 51 BIRTHDAY RAID", props: ["👽", "🛸", "🎂"], sky: ["#0b1a3a", "#2b6b4a"] },
   { title: "DEFUSING THE CABAL'S NUKE", props: ["☢️", "💣", "⏱️"], sky: ["#3a0b0b", "#c4632a"] },
@@ -151,6 +151,80 @@ fileInput.addEventListener("change", async () => {
 froggifyBtn.addEventListener("click", makeFroggy);
 document.getElementById("reroll").addEventListener("click", makeFroggy);
 
+const passInput = document.getElementById("party-pass");
+const statusEl = document.getElementById("party-status");
+const partyImg = document.getElementById("party-img");
+const WAIT_LINES = [
+  "Summoning the frog squad…",
+  "Briefing Momma on the mission…",
+  "Loading the freedom cannons…",
+  "Bribing the lizard people…",
+  "Asking Pepe to hold still…",
+  "Painting the explosions…",
+];
+let busy = false;
+
+function setStatus(text, isError = false) {
+  statusEl.hidden = !text;
+  statusEl.textContent = text || "";
+  statusEl.classList.toggle("error", isError);
+}
+
+// Phone photos can be huge; send a 1024px JPEG instead.
+function shrinkPhoto(img) {
+  const s = Math.min(1, 1024 / Math.max(img.width, img.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.width * s);
+  c.height = Math.round(img.height * s);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return new Promise(res => c.toBlob(res, "image/jpeg", 0.9));
+}
+
+async function makeFroggy() {
+  if (!userImg || busy) return;
+  if (!PARTY_API) return makeCollage();
+
+  busy = true;
+  froggifyBtn.disabled = true;
+  let line = 0;
+  setStatus(WAIT_LINES[0]);
+  const ticker = setInterval(() => setStatus(WAIT_LINES[++line % WAIT_LINES.length]), 4000);
+
+  try {
+    const body = new FormData();
+    body.append("photo", await shrinkPhoto(userImg), "photo.jpg");
+    body.append("password", passInput.value);
+    const res = await fetch(PARTY_API, { method: "POST", body });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.status === 401) {
+      passInput.hidden = false;
+      passInput.focus();
+      setStatus(passInput.value ? "Wrong secret frog word. Try again!" : "Enter the secret frog word first 🐸", true);
+      return;
+    }
+    if (!res.ok || !data.image) throw new Error(data.error || "The frog lab is napping");
+
+    const src = "data:image/png;base64," + data.image;
+    partyImg.src = src;
+    partyImg.hidden = false;
+    canvas.hidden = true;
+    downloadLink.href = src;
+    resultFrame.hidden = false;
+    resultActions.hidden = false;
+    setStatus("");
+    resultFrame.scrollIntoView({ behavior: "smooth", block: "center" });
+  } catch (err) {
+    console.error(err);
+    setStatus("The AI frog lab is napping, so here's a collage instead 🐸", true);
+    await makeCollage();
+  } finally {
+    clearInterval(ticker);
+    busy = false;
+    froggifyBtn.disabled = false;
+  }
+}
+
 function circlePhoto(img, cx, cy, r, tilt) {
   ctx.save();
   ctx.translate(cx, cy);
@@ -187,7 +261,7 @@ function memeText(text, x, y, maxW, size) {
   ctx.fillText(text, x, y);
 }
 
-async function makeFroggy() {
+async function makeCollage() {
   if (!userImg) return;
   let pick;
   do { pick = Math.floor(Math.random() * SCENES.length); } while (pick === lastScene && SCENES.length > 1);
@@ -245,6 +319,8 @@ async function makeFroggy() {
   memeText(scene.title, W / 2, 80, 1000, 96);
   memeText("HAPEPE BIRTHDAY MOMMA", W / 2, 1030, 1000, 64);
 
+  canvas.hidden = false;
+  partyImg.hidden = true;
   resultFrame.hidden = false;
   resultActions.hidden = false;
   downloadLink.href = canvas.toDataURL("image/png");

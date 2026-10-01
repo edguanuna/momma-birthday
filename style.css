@@ -205,6 +205,25 @@ body.open-party .party .room { display: flex; animation: pop .5s ease-out; }
 .result-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .result-actions[hidden], .result[hidden] { display: none; }
 
+.pass {
+  font: 700 1.1rem "Comic Neue", cursive;
+  padding: 10px 16px;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  text-align: center;
+  width: min(100%, 320px);
+}
+
+.status {
+  font: 1.6rem "Bangers", Impact, sans-serif;
+  letter-spacing: 1px;
+  color: var(--pepe-dark);
+  text-align: center;
+  margin: 0;
+  animation: bob 1.6s ease-in-out infinite;
+}
+.status.error { color: #b3261e; animation: none; font-family: "Comic Neue", cursive; font-weight: 700; font-size: 1.1rem; }
+
 .tiny { font-size: .9rem; opacity: .75; text-align: center; margin: 0; }
 
 /* ---------- upload ---------- */

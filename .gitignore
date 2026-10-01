@@ -1,3 +1,7 @@
 .claude/
 .DS_Store
 originals/
+.env
+.dev.vars
+worker/.wrangler/
+node_modules/
