@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hapepe Birthday Momma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="balloons" aria-hidden="true"></div>
+
+  <header class="banner">
+    <h1 class="meme-text">Hapepe Birthday Momma!</h1>
+  </header>
+
+  <main class="split">
+    <!-- LEFT / TOP: SOLO MISSION -->
+    <section class="half solo" data-side="solo">
+      <button class="door" data-open="solo">
+        <span class="door-frog" data-frog="hat"></span>
+        <span class="door-title meme-text">Solo Mission</span>
+        <span class="door-sub">momma saves the world. again.</span>
+      </button>
+
+      <div class="room">
+        <button class="back" data-back>&larr; Back to the Pond</button>
+        <h2 class="meme-text">Solo Mission</h2>
+        <div class="frame">
+          <img id="solo-img" alt="Momma on a froggy mission">
+          <div id="solo-empty" class="empty" hidden>
+            <span data-frog="plain"></span>
+            <p>No mission photos yet. Drop them in <code>images/solo/</code> and list them in <code>photos.js</code>.</p>
+          </div>
+        </div>
+        <button id="shuffle" class="big-btn">🐸 Shuffle 🐸</button>
+        <p id="solo-count" class="tiny"></p>
+      </div>
+    </section>
+
+    <!-- RIGHT / BOTTOM: FROGGY PARTY -->
+    <section class="half party" data-side="party">
+      <button class="door" data-open="party">
+        <span class="door-frog" data-frog="glasses"></span>
+        <span class="door-title meme-text">Froggy Party</span>
+        <span class="door-sub">join momma's frog squad</span>
+      </button>
+
+      <div class="room">
+        <button class="back" data-back>&larr; Back to the Pond</button>
+        <h2 class="meme-text">Froggy Party</h2>
+
+        <label class="upload">
+          <input id="party-file" type="file" accept="image/*">
+          <span class="upload-box">
+            <span data-frog="plain"></span>
+            <strong>Tap to upload a pic of yourself</strong>
+            <small>from your camera roll, downloads, wherever</small>
+          </span>
+        </label>
+
+        <button id="froggify" class="big-btn" disabled>✨ Make It Froggy ✨</button>
+
+        <div class="frame result" hidden>
+          <canvas id="party-canvas" width="1080" height="1080"></canvas>
+        </div>
+        <div class="result-actions" hidden>
+          <button id="reroll" class="small-btn">🎲 New mission</button>
+          <a id="download" class="small-btn" download="froggy-party.png">⬇️ Save pic</a>
+        </div>
+        <p class="tiny">Your photo stays on your device. Only upload people who are cool with it.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="photos.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

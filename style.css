@@ -1,0 +1,265 @@
+:root {
+  --pepe: #5f9a3c;
+  --pepe-dark: #2e5a1c;
+  --pepe-light: #9cc97a;
+  --pond: #e4f1d6;
+  --pond-2: #d3e8bf;
+  --lips: #b8633a;
+  --shirt: #2f5fd0;
+  --ink: #1d2a14;
+  --paper: #fffef4;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body { margin: 0; height: 100%; }
+
+body {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(95,154,60,.12) 0 60px, transparent 61px),
+    radial-gradient(circle at 80% 70%, rgba(95,154,60,.10) 0 90px, transparent 91px),
+    radial-gradient(circle at 60% 15%, rgba(95,154,60,.08) 0 40px, transparent 41px),
+    var(--pond);
+  color: var(--ink);
+  font-family: "Comic Neue", "Comic Sans MS", cursive;
+  overflow-x: hidden;
+}
+
+/* ---------- meme text ---------- */
+.meme-text {
+  font-family: "Bangers", Impact, sans-serif;
+  letter-spacing: 2px;
+  color: #fff;
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 4px 4px 0 var(--pepe-dark);
+  margin: 0;
+}
+
+.banner {
+  text-align: center;
+  padding: 14px 16px 6px;
+  position: relative;
+  z-index: 2;
+}
+.banner h1 {
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+body.opened .banner { display: none; }
+
+/* ---------- split ---------- */
+.split {
+  display: flex;
+  gap: 16px;
+  padding: 12px 16px 16px;
+  min-height: calc(100vh - 90px);
+  position: relative;
+  z-index: 1;
+}
+body.opened .split { min-height: 100vh; padding-top: 16px; }
+
+.half {
+  flex: 1 1 0;
+  min-width: 0;
+  transition: flex-grow .6s cubic-bezier(.6,-0.3,.3,1.4), opacity .4s;
+  display: flex;
+  flex-direction: column;
+}
+body.open-solo .party,
+body.open-party .solo {
+  flex-grow: 0.0001;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+body.opened .split { gap: 0; }
+
+/* ---------- doors ---------- */
+.door {
+  flex: 1;
+  border: 5px solid var(--ink);
+  border-radius: 28px 40px 24px 36px;
+  background: var(--pepe);
+  box-shadow: 8px 8px 0 var(--pepe-dark);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  color: #fff;
+  font: inherit;
+  transition: transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.solo .door { transform: rotate(-1.2deg); }
+.party .door { transform: rotate(1.2deg); background: var(--pepe-light); }
+.door:hover { transform: rotate(0) scale(1.02); }
+.door:active { transform: scale(.97); }
+.door::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 18px, transparent 18px 36px);
+}
+.door-title { font-size: clamp(2.6rem, 7vw, 5rem); position: relative; }
+.door-sub {
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 700;
+  padding: 4px 12px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  transform: rotate(-3deg);
+}
+.door-frog { width: min(180px, 40%); position: relative; }
+.door-frog svg { width: 100%; height: auto; display: block; animation: bob 2.4s ease-in-out infinite; }
+.party .door-frog svg { animation-delay: -1.2s; }
+
+body.opened .door { display: none; }
+
+/* ---------- rooms ---------- */
+.room {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+body.open-solo .solo .room,
+body.open-party .party .room { display: flex; animation: pop .5s ease-out; }
+.room h2 { font-size: clamp(2.4rem, 8vw, 4rem); transform: rotate(-2deg); }
+
+.back {
+  align-self: flex-start;
+  font: 700 1rem "Comic Neue", cursive;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 8px 16px;
+  box-shadow: 3px 3px 0 var(--pepe-dark);
+  cursor: pointer;
+}
+.back:hover { background: var(--pepe-light); }
+
+.frame {
+  width: 100%;
+  background: var(--paper);
+  border: 5px solid var(--ink);
+  border-radius: 12px 26px 14px 22px;
+  box-shadow: 8px 8px 0 var(--pepe-dark);
+  padding: 10px;
+  transform: rotate(.8deg);
+}
+.frame img, .frame canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+#solo-img { max-height: 70vh; object-fit: contain; background: var(--pond-2); }
+#solo-img.wiggle { animation: wiggle .4s; }
+
+.empty { text-align: center; padding: 24px; }
+.empty span { display: block; width: 120px; margin: 0 auto 8px; }
+.empty code { background: var(--pond-2); padding: 1px 5px; border-radius: 4px; }
+
+.big-btn {
+  font: 2rem "Bangers", Impact, sans-serif;
+  letter-spacing: 2px;
+  background: var(--shirt);
+  color: #fff;
+  border: 5px solid var(--ink);
+  border-radius: 18px;
+  padding: 12px 34px;
+  box-shadow: 6px 6px 0 var(--ink);
+  cursor: pointer;
+  transform: rotate(-1.5deg);
+  transition: transform .1s, box-shadow .1s;
+}
+.big-btn:hover { transform: rotate(1deg) scale(1.05); }
+.big-btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--ink); }
+.big-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+.small-btn {
+  font: 700 1.05rem "Comic Neue", cursive;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 3px 3px 0 var(--pepe-dark);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.result-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.result-actions[hidden], .result[hidden] { display: none; }
+
+.tiny { font-size: .9rem; opacity: .75; text-align: center; margin: 0; }
+
+/* ---------- upload ---------- */
+.upload { width: 100%; cursor: pointer; }
+.upload input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 16px;
+  background: var(--paper);
+  border: 4px dashed var(--pepe-dark);
+  border-radius: 20px;
+  text-align: center;
+  font-size: 1.15rem;
+}
+.upload-box span { width: 90px; }
+.upload-box img.preview { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 4px solid var(--ink); }
+.upload input:focus-visible + .upload-box { outline: 3px solid var(--shirt); }
+
+/* ---------- balloons ---------- */
+.balloons { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.balloon {
+  position: absolute;
+  bottom: -120px;
+  width: 44px;
+  height: 56px;
+  border-radius: 50% 50% 48% 48%;
+  opacity: .55;
+  animation: float linear infinite;
+}
+.balloon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 50px;
+  background: rgba(0,0,0,.35);
+}
+
+@keyframes float { to { transform: translateY(-130vh) rotate(12deg); } }
+@keyframes bob { 50% { transform: translateY(-8px) rotate(-3deg); } }
+@keyframes pop { from { transform: scale(.9); opacity: 0; } }
+@keyframes wiggle { 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+
+/* ---------- phones: stack top/bottom ---------- */
+@media (max-width: 720px) {
+  .split { flex-direction: column; }
+  .door { min-height: 38vh; }
+  .door-frog { width: 110px; }
+  .big-btn { font-size: 1.7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
