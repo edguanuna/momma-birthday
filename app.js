@@ -138,18 +138,103 @@ const loadImg = src => new Promise(res => {
 const frogImg = style => loadImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(frogSVG(style)));
 const mommaReady = loadImg(MOMMA_PHOTO);
 
+// ---- circle cropper: drag to center the face, slider/pinch/wheel to zoom ----
+const uploadLabel = document.querySelector(".upload");
+const cropper = document.querySelector(".cropper");
+const cropCircle = document.getElementById("crop-circle");
+const cropImg = document.getElementById("crop-img");
+const zoomInput = document.getElementById("crop-zoom");
+const crop = { x: 0, y: 0, zoom: 1 }; // x/y = offset of the image center from the circle center, in screen px
+
+const circleSize = () => cropCircle.clientWidth;
+const cropScale = () => (circleSize() / Math.min(userImg.width, userImg.height)) * crop.zoom;
+
+function layoutCrop() {
+  if (!userImg) return;
+  const d = circleSize(), s = cropScale();
+  const w = userImg.width * s, h = userImg.height * s;
+  // keep the circle fully covered by the photo
+  crop.x = Math.max(-(w - d) / 2, Math.min((w - d) / 2, crop.x));
+  crop.y = Math.max(-(h - d) / 2, Math.min((h - d) / 2, crop.y));
+  cropImg.style.width = userImg.width + "px";
+  cropImg.style.transform = `translate(${d / 2 - w / 2 + crop.x}px, ${d / 2 - h / 2 + crop.y}px) scale(${s})`;
+}
+
+function setZoom(z) {
+  const old = crop.zoom;
+  crop.zoom = Math.max(1, Math.min(4, z));
+  crop.x *= crop.zoom / old; // zoom around the circle center
+  crop.y *= crop.zoom / old;
+  zoomInput.value = crop.zoom;
+  layoutCrop();
+}
+
+// What's inside the circle, as a square canvas (max 1024px). Used for the AI and the collage.
+function croppedPhoto() {
+  const d = circleSize(), s = cropScale();
+  const side = d / s;
+  const sx = userImg.width / 2 - crop.x / s - side / 2;
+  const sy = userImg.height / 2 - crop.y / s - side / 2;
+  const out = Math.min(1024, Math.round(side));
+  const c = document.createElement("canvas");
+  c.width = c.height = out;
+  c.getContext("2d").drawImage(userImg, sx, sy, side, side, 0, 0, out, out);
+  return c;
+}
+
+const pointers = new Map();
+let pinchStart = null;
+cropCircle.addEventListener("pointerdown", e => {
+  cropCircle.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  cropCircle.classList.add("dragging");
+  if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()];
+    pinchStart = { dist: Math.hypot(a.x - b.x, a.y - b.y), zoom: crop.zoom };
+  }
+});
+cropCircle.addEventListener("pointermove", e => {
+  const prev = pointers.get(e.pointerId);
+  if (!prev) return;
+  const cur = { x: e.clientX, y: e.clientY };
+  pointers.set(e.pointerId, cur);
+  if (pointers.size === 2 && pinchStart) {
+    const [a, b] = [...pointers.values()];
+    setZoom(pinchStart.zoom * Math.hypot(a.x - b.x, a.y - b.y) / pinchStart.dist);
+  } else if (pointers.size === 1) {
+    crop.x += cur.x - prev.x;
+    crop.y += cur.y - prev.y;
+    layoutCrop();
+  }
+});
+const endPointer = e => {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinchStart = null;
+  if (!pointers.size) cropCircle.classList.remove("dragging");
+};
+cropCircle.addEventListener("pointerup", endPointer);
+cropCircle.addEventListener("pointercancel", endPointer);
+cropCircle.addEventListener("wheel", e => { e.preventDefault(); setZoom(crop.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
+zoomInput.addEventListener("input", () => setZoom(Number(zoomInput.value)));
+document.getElementById("change-photo").addEventListener("click", () => fileInput.click());
+
 fileInput.addEventListener("change", async () => {
   const file = fileInput.files[0];
   if (!file) return;
   const url = URL.createObjectURL(file);
-  userImg = await loadImg(url);
-  const box = document.querySelector(".upload-box");
-  if (!userImg) {
-    box.querySelector("strong").textContent = "Hmm, couldn't read that pic. Try a JPG or PNG?";
-    froggifyBtn.disabled = true;
+  const img = await loadImg(url);
+  if (!img) {
+    document.querySelector(".upload-box strong").textContent = "Hmm, couldn't read that pic. Try a JPG or PNG?";
     return;
   }
-  box.innerHTML = `<img class="preview" src="${url}" alt="Your upload"><strong>Lookin' froggy. Tap to change.</strong>`;
+  userImg = img;
+  cropImg.src = url;
+  crop.x = crop.y = 0;
+  crop.zoom = 1;
+  zoomInput.value = 1;
+  uploadLabel.hidden = true;
+  cropper.hidden = false;
+  layoutCrop();
   froggifyBtn.disabled = false;
 });
 
@@ -197,7 +282,7 @@ async function makeFroggy() {
 
   try {
     const body = new FormData();
-    body.append("photo", await shrinkPhoto(userImg), "photo.jpg");
+    body.append("photo", await shrinkPhoto(croppedPhoto()), "photo.jpg");
     body.append("password", passInput.value);
     const res = await fetch(PARTY_API, { method: "POST", body });
     const data = await res.json().catch(() => ({}));
@@ -310,7 +395,7 @@ async function makeCollage() {
   });
 
   // the heroes
-  circlePhoto(userImg, 330, 560, 190, -0.07);
+  circlePhoto(croppedPhoto(), 330, 560, 190, -0.07);
   if (momma) circlePhoto(momma, 750, 540, 200, 0.06);
   else ctx.drawImage(frogPlain, 560, 330, 380, 437);
   memeText("YOU", 330, 800, 300, 70);

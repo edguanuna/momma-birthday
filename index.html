@@ -61,6 +61,15 @@
           </span>
         </label>
 
+        <div class="cropper" hidden>
+          <div class="crop-circle" id="crop-circle">
+            <img id="crop-img" alt="Your upload" draggable="false">
+          </div>
+          <p class="crop-hint">Drag to center the face 👆</p>
+          <label class="crop-zoom">🔍 <input id="crop-zoom" type="range" min="1" max="4" step="0.01" value="1" aria-label="Zoom"></label>
+          <button id="change-photo" class="small-btn" type="button">📷 Change pic</button>
+        </div>
+
         <input id="party-pass" class="pass" type="password" placeholder="secret frog word 🐸" autocomplete="off" hidden>
 
         <button id="froggify" class="big-btn" disabled>✨ Make It Froggy ✨</button>
