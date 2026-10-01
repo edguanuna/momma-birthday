@@ -327,4 +327,31 @@ async function makeCollage() {
   resultFrame.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+// ---------- background song ----------
+// Browsers block sound until the first tap/click, so start it then and keep it looping.
+(function music() {
+  const song = document.getElementById("song");
+  const btn = document.getElementById("mute");
+  song.volume = 0.6;
+  let muted = false;
+  try { muted = localStorage.getItem("froggy-muted") === "1"; } catch {}
+
+  const render = () => {
+    btn.textContent = muted ? "🔇" : "🔊";
+    btn.setAttribute("aria-label", muted ? "Play music" : "Mute music");
+  };
+  const play = () => { if (!muted) song.play().catch(() => {}); };
+
+  btn.addEventListener("click", () => {
+    muted = !muted;
+    try { localStorage.setItem("froggy-muted", muted ? "1" : "0"); } catch {}
+    muted ? song.pause() : song.play().catch(() => {});
+    render();
+  });
+  ["pointerdown", "keydown", "touchstart"].forEach(ev =>
+    document.addEventListener(ev, e => { if (e.target !== btn) play(); }, { once: true, capture: true }));
+  render();
+  play(); // works right away if the browser allows autoplay
+})();
+
 route();
