@@ -14,6 +14,9 @@ const SOLO_PHOTOS = [
   "images/solo/11.jpg",
   "images/solo/12.jpg",
   "images/solo/13.jpg",
+  "images/solo/14.jpg",
+  "images/solo/15.jpg",
+  "images/solo/16.jpg",
 ];
 
 // Photo of Momma that gets added to every Froggy Party picture.

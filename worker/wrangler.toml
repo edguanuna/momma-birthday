@@ -7,7 +7,7 @@ compatibility_date = "2026-09-01"
 MODEL = "gpt-image-2.5-flare"
 QUALITY = "medium"
 # Reference photos of Momma (comma-separated). Swap for real photos of her once they're on the site.
-MOMMA_REFS = "https://edguanuna.github.io/momma-birthday/images/solo/04.jpg,https://edguanuna.github.io/momma-birthday/images/solo/08.jpg"
+MOMMA_REFS = "https://edguanuna.github.io/momma-birthday/images/solo/07.jpg,https://edguanuna.github.io/momma-birthday/images/solo/08.jpg"
 ALLOWED_ORIGINS = "https://edguanuna.github.io,http://localhost:8420"
 
 # Secrets (set with `npx wrangler secret put <NAME>`, never committed):
